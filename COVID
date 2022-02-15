@@ -1,0 +1,58 @@
+SELECT *
+FROM COVIDProject..COVIDDeaths
+WHERE Continent IS NOT NULL
+ORDER BY 3,4
+
+--SELECT *
+--FROM COVIDProject..COVIDVaccinations
+--ORDER BY 3,4
+
+-- Select Data that we are going to be using
+
+SELECT location, date, total_cases, new_cases, total_deaths, population
+FROM COVIDProject..COVIDDeaths
+WHERE Continent IS NOT NULL
+ORDER BY 1,2 
+
+
+-- Looking at TOTAL CASES vs TOTAL DEATHS
+-- Shows Likehood of dying if you contract COVID in your country
+
+SELECT location, date, total_cases, total_deaths, (total_deaths / total_cases)*100 AS DeathPercentage
+FROM COVIDProject..COVIDDeaths
+WHERE Location Like '%States'
+AND Continent IS NOT NULL
+ORDER BY 1,2
+
+-- Looking at TOTAL CASES vs POPULATION
+-- Shows what percentage of population got COVID
+
+SELECT location, date, population, total_cases,  (total_cases / population)*100 AS PercentPopulationInfected
+FROM COVIDProject..COVIDDeaths
+-- WHERE Location LIKE '%States'
+ORDER BY 1,2
+
+-- Looking at Countries With Highest Infection Rate Compared to Population
+
+SELECT location, population, MAX(total_cases) AS HighestInfectionCount,  MAX((total_cases / population))*100 AS PercentPopulationInfected
+FROM COVIDProject..COVIDDeaths
+-- WHERE Location LIKE '%States'
+GROUP BY population, location
+ORDER BY PercentPopulationInfected DESC
+
+-- Showing countries with the highest death count per population
+SELECT location, MAX(cast(total_deaths as int)) AS TotalDeathCount
+FROM COVIDProject..COVIDDeaths
+-- WHERE Location LIKE '%States'
+WHERE Continent IS NOT NULL
+GROUP BY population, location
+ORDER BY TotalDeathCount DESC
+
+-- LET'S BREAK THING DOWN BY CONTINENT
+
+SELECT continent, MAX(cast(total_deaths as int)) AS TotalDeathCount
+FROM COVIDProject..COVIDDeaths
+-- WHERE Location LIKE '%States'
+WHERE Continent IS NOT NULL
+GROUP BY continent
+ORDER BY TotalDeathCount DESC
