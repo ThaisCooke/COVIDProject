@@ -131,3 +131,21 @@ WHERE DEA.continent IS NOT NULL
 
 SELECT * , (RollingPeopleVaccinated /Population) * 100
 FROM PercentPopulationVaccinated
+
+- Creating View to store data for later visualizations
+
+Create View PercentPopulationVaccinated AS
+SELECT DEA.continent, DEA.location, DEA.date, DEA.population, VAC.new_vaccinations
+, SUM(Cast(VAC.new_vaccinations AS bigint)) OVER (Partition By DEA.location ORDER BY DEA.location, 
+DEA.date) AS RollingPeopleVaccinated
+--, (RollingPeopleVaccinated / Population) * 100
+FROM COVIDProject..COVIDDeaths DEA 
+JOIN COVIDProject..COVIDVaccinations VAC
+ON DEA.location = VAC.location
+AND DEA.date = VAC.date
+WHERE DEA.continent IS NOT NULL
+--ORDER BY 2,3 
+
+
+SELECT * 
+FROM PercentPopulationVaccinated
